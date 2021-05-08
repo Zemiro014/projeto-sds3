@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 import Charts from 'react-apexcharts';
 import { SaleSum } from 'types/sale';
 import { BASE_URL } from 'utils/request';
@@ -10,24 +11,25 @@ type ChartData = {
 
 const DonutChart = () => {
 
-    // Forma errada
-    let chartData : ChartData = { labels: [], series: []};
+    // 
 
-    // Forma errada de chamar dados na API
-   axios.get(`${BASE_URL}/sales/amount-by-seller`)
+    /* Trabalhando com o estado do componente
+     * Hook: useState => Manter estado no componente
+        Hook: useEffect => Executar algo na instanciação ou destruição do componente, observar estado
+     */
+    const [ chartData, setChartData] = useState<ChartData>({ labels: [], series: []});
+
+    useEffect( () => {
+        axios.get(`${BASE_URL}/sales/amount-by-seller`)
         .then(response => {
             const data = response.data as SaleSum[];
             const myLabels = data.map(obj => obj.sellerName);
             const mySeries = data.map(obj => obj.sum);
 
-            chartData = { labels: myLabels, series: mySeries};
-            console.log(response.data);
+            setChartData({ labels: myLabels, series: mySeries});
         });
-    //const mockData = {
-    //    series: [477138, 499928, 444867, 220426, 473088],
-    //    labels: ['Anakin', 'Barry Allen', 'Kal-El', 'Logan', 'Padmé']
-    //}
-    
+    }, []);
+
     const options = {
         legend: {
             show: true
